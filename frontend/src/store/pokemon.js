@@ -37,6 +37,14 @@ export const getPokemonTypes = () => async dispatch => {
   }
 };
 
+export const getPokemonDetail = (pokemonId) => async (dispatch) => {
+  const response = await fetch(`/api/pokemon/${pokemonId}`)
+  if (response.ok) {
+    const data = response.json();
+    dispatch(addOnePokemon(data))
+  }
+}
+
 const initialState = {
   list: [],
   types: []
@@ -61,7 +69,7 @@ const pokemonReducer = (state = initialState, action) => {
         list: sortList(action.list)
       };
     }
-    case LOAD_TYPES: 
+    case LOAD_TYPES:
       return {
         ...state,
         types: action.types
@@ -85,7 +93,7 @@ const pokemonReducer = (state = initialState, action) => {
         }
       };
     }
-    case LOAD_ITEMS: 
+    case LOAD_ITEMS:
       return {
         ...state,
         [action.pokemonId]: {
