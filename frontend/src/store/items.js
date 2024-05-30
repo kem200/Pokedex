@@ -33,6 +33,22 @@ export const getItems = (id) => async (dispatch) => {
   }
 }
 
+export const createItem = (payload, pokemonId) => async (dispatch) => {
+  const response = await fetch(`/api/pokemon/${pokemonId}/items`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(add(data))
+    return data
+  }
+}
+
 export const editItem = (id, payload) => async (dispatch) => {
   const response = await fetch(`/api/items/${id}`, {
     method: 'PUT',

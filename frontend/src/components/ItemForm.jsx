@@ -1,31 +1,32 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { editItem } from '../store/items';
+import { editItem, createItem } from '../store/items'; // Added createItem import
 
-const ItemForm = ({ itemId, hideForm }) => {
-  let item = useSelector(state => state.items[itemId]);
+const ItemForm = ({ itemId, hideForm, pokemonId }) => { // Added pokemonId prop
+  const item = useSelector(state => state.items[itemId]) || { name: '', happiness: '', price: '' }; // Updated to handle new item
 
+  const [name, setName] = useState(item.name);
   const [happiness, setHappiness] = useState(item.happiness);
   const [price, setPrice] = useState(item.price);
-  const [name, setName] = useState(item.name);
+
+  const dispatch = useDispatch();
 
   const updateName = (e) => setName(e.target.value);
   const updateHappiness = (e) => setHappiness(e.target.value);
   const updatePrice = (e) => setPrice(e.target.value);
 
-  const dispatch = useDispatch();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...item,
-      name,
-      happiness,
-      price
-    };
+    const payload = { ...item, name, happiness, price };
 
-    let returnedItem = await dispatch(editItem(itemId, payload))
+    let returnedItem;
+    if (itemId) {
+      returnedItem = await dispatch(editItem(itemId, payload));
+    } else {
+      returnedItem = await dispatch(createItem(payload, pokemonId));
+    }
+
     if (returnedItem) {
       hideForm();
     }
@@ -61,7 +62,7 @@ const ItemForm = ({ itemId, hideForm }) => {
           value={price}
           onChange={updatePrice}
         />
-        <button type="submit">Update Item</button>
+        <button type="submit">{itemId ? 'Update Item' : 'Add Item'}</button>
         <button type="button" onClick={handleCancelClick}>Cancel</button>
       </form>
     </section>

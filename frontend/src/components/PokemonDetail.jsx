@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PokemonItems from './PokemonItems';
 import EditPokemonForm from './EditPokemonForm';
-import ItemForm from './ItemForm';
+import ItemForm from './ItemForm'; // Added import
 import { getPokemonDetail } from '../store/pokemon';
 
 const PokemonDetail = () => {
@@ -11,6 +11,7 @@ const PokemonDetail = () => {
   const pokemon = useSelector(state => state.pokemon[pokemonId]);
   const [showEditPokeForm, setShowEditPokeForm] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
+  const [showAddItem, setShowAddItem] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -18,13 +19,16 @@ const PokemonDetail = () => {
     setShowEditPokeForm(false);
     setEditItemId(null);
 
-    dispatch(getPokemonDetail(pokemonId))
-
+    dispatch(getPokemonDetail(pokemonId));
   }, [pokemonId, dispatch]);
 
   if (!pokemon || !pokemon.moves) {
     return null;
   }
+
+  const handleAddItem = () => {
+    setShowAddItem(true);
+  };
 
   let content = null;
 
@@ -33,6 +37,14 @@ const PokemonDetail = () => {
       <ItemForm
         itemId={editItemId}
         hideForm={() => setEditItemId(null)}
+        pokemonId={pokemonId} // Added pokemonId prop
+      />
+    );
+  } else if (showAddItem) {
+    content = (
+      <ItemForm
+        hideForm={() => setShowAddItem(false)}
+        pokemonId={pokemonId}
       />
     );
   } else if (showEditPokeForm && pokemon.captured) {
@@ -64,7 +76,7 @@ const PokemonDetail = () => {
               <b>Moves</b>
               <ul>
                 {pokemon.moves && pokemon.moves.map((move, i) => (
-                  <li key={move+i}>{move}</li>
+                  <li key={move + i}>{move}</li>
                 ))}
               </ul>
             </li>
@@ -73,7 +85,9 @@ const PokemonDetail = () => {
         <div>
           <h2>
             Items
-            <button> + </button>
+            {pokemon.captured && (
+              <button onClick={handleAddItem}> + </button>
+            )}
           </h2>
           <table>
             <thead>
@@ -106,11 +120,10 @@ const PokemonDetail = () => {
             <button onClick={() => setShowEditPokeForm(true)}>Edit</button>
           )}
         </div>
-
       </div>
       {content}
     </div>
   );
 };
 
-export default PokemonDetail;
+export default PokemonDetail
