@@ -16,7 +16,7 @@ const PokemonBrowser = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getPokemon(allPokemon))
+    dispatch(getPokemon())
   }, [dispatch])
 
   return (
